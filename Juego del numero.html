@@ -1,32 +1,182 @@
-<HTML>
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Inteligencia Artificial en Juegos - TP Nº1: El juego del número -->
+<!-- Gladys Gomez -->
+<style>
+body {
+    background-color: #e699ff;    
+}
 
-<HEAD>
+h1 {
+	font-family: "Sans-serif";
+    color: blue;
+    text-align: center;
+}
 
-<TITLE> PRIMER JUEGO </TITLE>
+h2 {
+	font-family: "Sans-serif";
+    color: red;
+    text-align: left;
+}
 
-</HEAD>
+p {
+    font-family: "Sans-serif";
+    font-size: 15px;
+}
+
+label {
+		font-family: "Sans-serif";
+		font-size: 15px;
+}
+
+input {
+		font-family: "DejaVu Sans Mono";
+		border-color: blue;
+		border-style: solid;
+}
+</style>
+</head>
+
+<body onload="generarAleatorio()">
+
+<h1> El juego del n&uacute;mero</h1>
+<p> Intente adivinar un n&uacute;mero de cuatro d&iacute;gitos. Buena Suerte!!!</p>
+<br>
+<label> Ingrese un n&uacute;mero de cuatro d&iacute;gitos </label>
+<input type="text" id="numero" size="4" onkeyup="verificarNumero()" autofocus>
+<br>
+
+<label id="etiqueta1" style="color:#e699ff" > N&uacute;mero aleatorio: </label>
+<label id="aleatorio" style="color:#e699ff" > **** </label>
+
+<h2 id="intentos" value= 0> Resultados de los intentos </h2>
+
+<p id="resultados" ></p>
 
 <script>
-document.getElementById("demo").innerHTML = "My First JavaScript";
-
-
+	function verificarNumero() {		
+		cadena = document.getElementById("numero").value;//devuelve una cadena de caracteres		
+			
+		if (isNaN(cadena) || cadena == 0 || cadena.length > 4){//si ingresa cualquier caracter que no sea un número
+			alert("Error! Debe ingresar un n\u00famero de cuatro d\u00edgitos\nque no comience con cero");//el número no debe comenzar con cero
+			document.getElementById("numero").value =''//limpia input			
+		}
+		else{
+			cantDigitos = cadena.length;
+			if (cantDigitos >= 4){
+				numeroIngresado = + cadena;//convertir a numero la cadena ingresada
+				numeroAleatorio = + document.getElementById("aleatorio").innerHTML;//convertir a numero la cadena que muestra el aleatorio				
+				document.getElementById("intentos").value = document.getElementById("intentos").value + 1;//cuenta intentos
+				compararNumeros(numeroAleatorio,numeroIngresado,cantDigitos);//comparar los numeros
+				document.getElementById("numero").value =''//limpia input para próximo posible intento
+				}		
+			}
+		}
+		
+		function generarAleatorio(){
+			var cuatroDigitos = 10000, valorMinimo = 1000;
+			
+			numAleatorio = Math.floor(Math.random()*cuatroDigitos);//generar numero random
+			while(numAleatorio < valorMinimo){//verifico que el numero sea de cuatro digitos
+				numAleatorio = Math.floor(Math.random()*cuatroDigitos)
+				}
+			document.getElementById("aleatorio").innerHTML = numAleatorio;
+			document.getElementById("intentos").value = 0;//inicializo cant intentos
+			document.getElementById("resultados").innerHTML ="..."//inicializo los resultados
+			}		
+		
+		function compararNumeros(numeroA,numeroI,cant){
+			var digitosAleatorio = [];
+			var digitosIngresados = [];	
+			
+			if(numeroA == numeroI){
+				cantIntentos = document.getElementById("intentos").value;				
+				respuesta(numeroI,4,0,0);
+				document.getElementById("resultados").innerHTML +="GANASTE!!! En " + cantIntentos +" intento/s";				
+				document.getElementById("numero").disabled = true;//bloquea el input
+				document.getElementById("resultados").innerHTML +=" ...... FIN DEL JUEGO!!!"						
+			}
+			else{
+				inicializarArreglo(digitosAleatorio,numeroA,cant);
+				inicializarArreglo(digitosIngresados,numeroI,cant);
+				compararPosicion(digitosAleatorio,digitosIngresados,cant, numeroI)								
+			}			
+		}
+		
+		function compararPosicion(arregloA,arregloI,tope,numero){			
+			var bien = 0, mal = 0, regular= 0;
+			
+			for(indice = 0 ;indice < tope; indice++){
+				if(arregloA[indice] == arregloI[indice]){
+					bien = bien +1
+				}
+				else{
+					if (pertenece(arregloA, arregloI[indice],tope)){
+						regular = regular + 1
+						}
+					else{
+						mal = mal + 1
+						}
+					}
+			}
+			respuesta(numero,bien,regular,mal)			
+		}
+		
+		function respuesta(numero,bien,regular,mal){			
+			var texto = "<ul><li>" + numero + " - ";
+			var hayAnterior = false;
+			
+			if (!(bien == 0)){
+				texto += bien +" BIEN";
+				hayAnterior = true
+			}
+			if (!(regular == 0)){
+				if (hayAnterior){
+					texto += ", ";
+					}
+				texto += regular + " REGULAR";
+				hayAnterior = true
+			}
+			if (!(mal == 0)){
+				if (hayAnterior){
+					texto += ", ";
+					}
+				texto += mal + " MAL";
+			}
+			texto += "</li></ul>";
+			document.getElementById("resultados").innerHTML += texto			
+		}
+			
+		function pertenece(arreglo, numero, tope){
+		var esta = false;
+		var indice = 0;
+		
+		while((indice < tope) && !esta){
+			if(arreglo[indice] == numero){
+					esta = true
+				}
+			else{
+				indice = indice + 1
+				}
+			}
+		return esta
+		}
+		
+		function inicializarArreglo(arregloNumero,numero,tope){
+			
+			for(indice = 0 ;indice < tope; indice++){
+				arregloNumero[indice] = Math.floor(numero / Math.pow(10,(tope-indice-1)));
+				numero = Math.floor(numero % Math.pow(10,(tope-indice-1)))
+				}
+			}
+			
+		function mostrarArreglo(arregloNumero){
+			
+			for(indice = 0 ;indice < arregloNumero.length; indice++){
+				alert(arregloNumero[indice] + "/n")				
+				}
+			}
 </script>
-
-<BODY>
-
-<!-- Juego del número. Hay que adivinar un número de 4 dígitos. Para ello el usuario ingresa un posible número-->
-    <!-- Se analiza el mismo cuando haya ingresado los 4 dígitos (no permitir enter)-->
-    <!--Se devuelve una respuesta indicando cuántos números son los correctos (coincide el número y el orden ocupado)-->
-     <!--BIEN si el número y el orden es correcto para una cantidad de dígitos-->
-     <!--REGULAR si el número o el orden es correcto para una cantidad de dígitos-->
-     <!--MAL si el número y el orden son incorrectos para una cantidad de dígitos-->
-
-<H1> Juego del n&uacute;mero </H1>
-
-<form>
-    Ingrese un número de cuatro dígitos: <input type="text" id="numero" size=4 value=4 event/><br />
-     </form> 
-
-</BODY>
-
-</HTML> 
+</body>
+</html>
