@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Trabajo Práctico Nº 2 - IAJ -->
+<style>
+body {
+    background-color: black;    
+}
+
+h1 {
+	font-family: "Sans-serif";
+	font-size: 18px;
+    color: red;
+    text-align: center;
+}
+</style>
+<meta charset="UTF-8">
+<script type="text/javascript" src="phaser.min.js"></script>
+</head>
+
+<body>
+<h1>El Recolector</h1>
+<script>
+	var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+	var paredes;
+	var puntaje = 0;
+	var puntajeTexto;
+	
+	function preload() {
+		
+		game.load.image('fondo', 'imagenes/cielo.png');
+		
+		game.load.image('escalon', 'imagenes/escalon.png');
+		game.load.image('pared_2', 'imagenes/pared_2.png');
+		
+		game.load.image('rosa', 'imagenes/rosa.png');
+		game.load.image('margarita', 'imagenes/margarita.png');		
+		game.load.image('tulipan', 'imagenes/tulipan.png');		
+		
+		game.load.spritesheet('personaje', 'imagenes/pajaro_izquierda.png', 57, 48);		
+	}
+
+	function create() {		
+		
+		game.physics.startSystem(Phaser.Physics.ARCADE);
+		
+		game.add.sprite(0, 0, 'fondo');
+		
+		//el ambiente
+		paredes = game.add.group();		
+		paredes.enableBody = true;
+		
+		var pared = paredes.create(0, 60, 'escalon');		
+		pared.body.immovable = true;
+		pared = paredes.create(300, 60, 'escalon');
+		pared.body.immovable = true;
+		pared = paredes.create(450, 60, 'escalon');
+		pared.body.immovable = true;				
+		pared = paredes.create(740, 60, 'escalon');		
+		pared.body.immovable = true;		
+		
+		pared = paredes.create(60, 100, 'escalon');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(580, 125, 'escalon');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(0, 200, 'escalon');
+		pared.body.immovable = true;
+		pared = paredes.create(175, 200, 'escalon');
+		pared.body.immovable = true;
+		pared = paredes.create(350, 200, 'escalon');
+		pared.body.immovable = true;
+		pared = paredes.create(520, 200, 'escalon');
+		pared.body.immovable = true;
+		pared = paredes.create(720, 200, 'escalon');
+		pared.body.immovable = true;		
+		
+		pared = paredes.create(294, 310, 'escalon');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(230, 340, 'escalon');		
+		pared.body.immovable = true;
+		pared = paredes.create(445, 340, 'escalon');		
+		pared.body.immovable = true;
+		pared = paredes.create(650, 340, 'escalon');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(0, 380, 'escalon');		
+		pared.body.immovable = true;
+		
+		pared = paredes.create(380, 395, 'escalon');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(740, 420, 'escalon');
+		pared.body.immovable = true;		
+		
+		pared = paredes.create(549, 425, 'escalon');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(80, 500, 'escalon');
+		pared.body.immovable = true;
+		pared = paredes.create(180, 500, 'escalon');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(340, 520, 'escalon');
+		pared.body.immovable = true;
+		pared = paredes.create(540, 520, 'escalon');
+		pared.body.immovable = true;			
+		
+		
+		pared = paredes.create(200, 0, 'pared_2');
+		pared.body.immovable = true;
+		pared = paredes.create(600, 0, 'pared_2');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(350, 106, 'pared_2');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(60, 200, 'pared_2');
+		pared.body.immovable = true;
+		pared = paredes.create(700, 200, 'pared_2');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(150, 300, 'pared_2');
+		pared.body.immovable = true;		
+		pared = paredes.create(355, 300, 'pared_2');
+		pared.body.immovable = true;		
+		pared = paredes.create(550, 300, 'pared_2');
+		pared.body.immovable = true;
+		
+		pared = paredes.create(145, 480, 'pared_2');
+		pared.body.immovable = true;
+		pared = paredes.create(400, 480, 'pared_2');
+		pared.body.immovable = true;			
+		
+		pared = paredes.create(710, 500, 'pared_2');
+		pared.body.immovable = true;
+		
+		//el jugador
+		player = game.add.sprite(0, 0, 'personaje');
+
+		game.physics.arcade.enable(player);
+		
+		player.body.bounce.y = 0;		
+		player.body.collideWorldBounds = true;
+		
+		player.animations.add('izquierda', [0, 1, 2, 3], 10, true);
+		player.animations.add('derecha', [3, 2, 1, 0], 10, true);
+		player.animations.add('arriba', [0, 1, 2, 0], 10, true);
+		player.animations.add('abajo', [0, 1, 2, 0], 10, true);
+		
+		cursors = game.input.keyboard.createCursorKeys();
+		
+		
+		puntajeTexto = game.add.text(640,10, 'Puntos: '+ puntaje, { fontSize: '26px', fill: 'black' });
+		
+		//los objetos
+		rosas = game.add.group();		
+		rosas.enableBody = true;
+		
+		var rosa = rosas.create(320, 0, 'rosa');
+		rosa.body.immovable = true;
+		
+		rosa = rosas.create(30, 100, 'rosa');
+		rosa.body.immovable = true;
+		
+		rosa = rosas.create(740, 235, 'rosa');		
+		rosa.body.immovable = true;
+		
+		rosa = rosas.create(400, 350, 'rosa');		
+		rosa.body.immovable = true;
+		
+		rosa = rosas.create(110, 540, 'rosa');
+		rosa.body.immovable = true;
+				
+		
+		margaritas = game.add.group();		
+		margaritas.enableBody = true;
+		
+		var margarita = margaritas.create(565, 0, 'margarita');
+		margarita.body.immovable = true;
+		
+		margarita = margaritas.create(700, 150, 'margarita');
+		margarita.body.immovable = true;
+		
+		margarita = margaritas.create(380, 170, 'margarita');
+		margarita.body.immovable = true;
+		
+		margarita = margaritas.create(0, 230, 'margarita');		
+		margarita.body.immovable = true;
+		
+		margarita = margaritas.create(180, 530, 'margarita');
+		margarita.body.immovable = true;
+		
+		margarita = margaritas.create(560, 560, 'margarita');
+		margarita.body.immovable = true;
+		
+		
+		tulipanes = game.add.group();		
+		tulipanes.enableBody = true;
+		
+		var tulipan = tulipanes.create(250, 200, 'tulipan');
+		tulipan.body.immovable = true;
+		
+		tulipan = tulipanes.create(330, 350, 'tulipan');
+		tulipan.body.immovable = true;
+		
+		tulipan = tulipanes.create(200, 380, 'tulipan');
+		tulipan.body.immovable = true;		
+		tulipan = tulipanes.create(600, 380, 'tulipan');
+		tulipan.body.immovable = true;
+		
+		tulipan = tulipanes.create(770, 570, 'tulipan');
+		tulipan.body.immovable = true;
+	}
+
+	function update() {		
+		
+		game.physics.arcade.collide(player, paredes);
+		
+		player.body.velocity.x = 0;
+		player.body.velocity.y = 0;
+
+		if (cursors.left.isDown)
+		{
+			player.body.velocity.x = -150;
+			player.animations.play('izquierda');
+		}
+		else if (cursors.right.isDown)
+		{
+			player.body.velocity.x = 150;
+			player.animations.play('derecha');			
+		}
+		else if (cursors.up.isDown){
+					player.body.velocity.y = -100;
+					player.animations.play('arriba');								
+				}
+			 else{
+					if (cursors.down.isDown){
+						player.body.velocity.y = 100;
+						player.animations.play('abajo');
+					}
+					else{
+						player.animations.stop();
+						player.frame = 4;
+					}
+				}
+		
+		game.physics.arcade.overlap(player, rosas, recolectarRosa, null, this);
+		game.physics.arcade.overlap(player, margaritas, recolectarMargarita, null, this);
+		game.physics.arcade.overlap(player, tulipanes, recolectarTulipan, null, this);
+		
+		function recolectarRosa (player, objeto) {
+			
+			objeto.kill();
+			puntaje += 10;
+			if(+puntaje >= 0){
+				puntajeTexto.fill = 'green';
+			}
+			puntajeTexto.text = 'Puntos: ' + puntaje;
+		}
+		
+		function recolectarMargarita (player, objeto) {
+			objeto.kill();
+			puntaje += 20;
+			if(+puntaje >= 0){
+				puntajeTexto.fill = 'green';
+			}
+			puntajeTexto.text = 'Puntos: ' + puntaje;
+		}
+		
+		function recolectarTulipan (player, objeto) {
+			objeto.kill();
+			puntaje += 30;
+			if(+puntaje >= 0){
+				puntajeTexto.fill = 'green';
+			}
+			puntajeTexto.text = 'Puntos: ' + puntaje;
+		}    
+	}
+</script>
+</body>
+</html>
